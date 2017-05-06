@@ -7,3 +7,5 @@ The project introduction is [here](https://github.com/YilinGao/Ames-Housing-Pred
 The final report is [here](https://github.com/YilinGao/Ames-Housing-Prediction/blob/master/writeup.pdf).
 
 The analysis Rmd file is [here](https://github.com/YilinGao/Ames-Housing-Prediction/blob/master/analysis.Rmd). The analysis is done with R.
+
+Simple OLS model, OLS with BIC stepwise variable selection, OLS with BIC and variable transformation, Poisson model, Random Forest, Boosting, LASSO model with interaction terms and variable shrinkage, GAM are explored. Based on RMSEs on both training and testing data, the LASSO model is the best one. Refer to the analysis and writeup files for more details in data processing, model selection, and performance measurement.
