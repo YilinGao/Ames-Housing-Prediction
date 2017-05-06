@@ -1,5 +1,6 @@
 ---
 title: "Stat 521 Predictive Modeling Final Project Writeup"
+author: '[Yilin Gao, Wenqi Cheng, Liyu Gong, Mengrui Yin]'
 output:
   pdf_document: default
   html_notebook: default
