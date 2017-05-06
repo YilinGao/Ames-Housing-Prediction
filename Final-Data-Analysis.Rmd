@@ -1,0 +1,168 @@
+---
+title: "Final Data Analysis Project"
+date:  "Write up due April 28 at 5 pm"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+For this project you will take the role of a consultant hired by a real estate investment firm in Ames, Iowa, a mid-west town in the United States, to analyze data in order to help provide insight into how the firm should invest for highest profits, and to quantify and communicate to the company management what types of real estate properties are good investments and why. They have provided you with data on housing sales from between 2006 to 2010 that contains information about the characteristics of the house (number of bedrooms, number of bathrooms, square footage, etc.) and the house's sale price. The codebook for this data set is [available online here ](https://ww2.amstat.org/publications/jse/v19n3/decock/datadocumentation.txt)  or in the Data folder in your repo.
+
+## About the Data Analysis Project
+
+It's generally a bad idea to buy the most expensive house in the neighborhood. And remember the real estate agents' mantra: Location, location, location! Keep in mind that the goal is to make money for your investors, and hence investing in a property that is overvalued (costing more than it is worth) is rarely a good idea. This means that it's critical to know which properties are overvalued and which are undervalued.  The company that hired you has many questions for you about the housing market. It is up to you to decide what methods you want to use (frequentist or Bayesian) to answer these questions, and implement them to help to identify undervalued and overvalued properties.
+
+
+You will have three data sets: a subset for training, a subset for testing, and a third subset for validation. You will be asked to do data exploration and build your model (or models) initially using only the training data. Then, you will test your model on the testing data, and finally validate using the validation data. We are challenging you to keep your analysis experience realistic, and in a realistic scenario you would not have access to all three of these data sets at once.  You will be able to see on our scoreboard how well your team is doing based on its predictive performance on the testing data.  After your project is turned in you will see the final score on the validation set.
+
+All members of the team should contribute equally and answer any questions about the analysis at the final presentation.
+
+For your analysis create a new notebook named "project.Rmd"
+and update accordingly rather than editing this.
+
+
+### Read in Training Data
+
+To get started read in the training data:
+```{r read-data}
+load("ames_train.Rdata")
+```
+
+The `Neighborhood` variable, typically of little interest other than to model the location effect, may be of more relevance when used with the [map](http://www.amstat.org/publications/jse/v19n3/decock/AmesResidential.pdf).
+
+We are restricting attention to just the "normal sales" condition.
+
+## Part I: Simple Model
+
+In the first model you are allowed only limited manipulations of the original data set to predict the sales price `price`. You are allowed to take power transformations of the original variables [square roots, logs, inverses, squares, etc.] but you are NOT allowed to create interaction variables. This means that a variable may only be used once in an equation [if you use $ x^2$ don’t use $x$]. Additionally, you may eliminate any data points you deem unfit. This model should have a minimum r-square of 73% (in the original units) and contain at least 6 variables but fewer than 20.   
+
+```{r model1}
+model1 = lm(price ~ 1, data=ames_train)
+```
+
+
+
+### Model Evaluation on Test Data
+Create predicted values for price using your model using the testing data
+
+```{r read-test-data}
+load("ames_test.Rdata")
+```
+
+```{r predict-model1, echo=FALSE}
+Yhat = predict(model1, newdata=ames_test, interval = "pred")
+```
+
+You should save your predictions in a dataframe with columns for `PID`  (property identifier), `fit`, predicted values on the test data, and where possible `lwr` and `upr`, lower and upper 95% interval estimates for predicting `price`. 
+
+```{r create }
+# name dataframe as predictions! DO NOT CHANGE
+predictions = as.data.frame(Yhat)
+predictions$PID = ames_test$PID
+save(predictions, file="predict.Rdata")
+```
+
+Your models will be evaluated on the following criteria on the test data: 
+
+* Bias:  Average (Yhat-Y)  positive values indicate the model tends to overestimate price (on average) while negative values indicate the model tends to underestimate price.
+
+* Maximum Deviation:  Max |Y-Yhat| -  identifies the worst prediction  made in the validation data set.
+
+* Mean Absolute Deviation:  Average |Y-Yhat| - the average error (regardless of sign).
+
+* Root Mean Square Error: Sqrt Average (Y-Yhat)^2
+
+* Coverage:  Average( lwr < Y < upr) 
+
+In order to have a passing wercker badge, your file for predictions needs to be the same length as the test data, with three columns:  fitted values, lower CI and upper CI values in that order with names, fit, lwr, and upr respectively.  
+
+You will be able to see your scores on the score board (coming soon!).  They will be initialized by a predction based on the mean in the training data.
+
+_Model Check_ - Test your prediction on the first observation in the training and test data set to make sure that the model gives a reasonable answer and include this in a supplement of your report. This should be done BY HAND using a calculator (this means use the raw data from the original dataset and manually calculate all transformations and interactions with your calculator)! Models that do not give reasonable answers will be given a minimum 2 letter grade reduction. Also be careful as you cannot use certain transformations [log or inverse x] if a variable has values of 0.
+
+### Part II: Complex Model
+
+In this part you may go all out for constructing a best fitting model for predicting housing prices using methods that we have covered this semester.  You should feel free to to create any new variables (such as quadratic, interaction, or indicator variables, splines, etc). The variable `TotalSq = X1st.Flr.SF+X2nd.Flr.SF` was added to the dataframe (that does not include basement area, so you may improve on this. A relative grade is assigned by comparing your fit on the test set to that of your fellow students with bonus points awarded to those who substantially exceed their fellow students and point reductions occurring for models which fit exceedingly poorly.  
+
+Update your predictions using your complex model to provide point estimates and CI.
+
+```{r predict-model2, echo=FALSE}
+# replace model1 with model2
+predictions = as.data.frame(predict(model1, newdata=ames_test, interval = "pred"))
+predictions$PID = ames_test$PID
+save(predictions, file="predict.Rdata")
+```
+
+You may iterate here as much as you like exploring different models until you are satisfied with your results.
+
+### Part III: Write Up
+
+Once you are satisfied with your model, provide a write up of your data analysis project in a new Rmd file/pdf file: `writeup.Rmd` by copying over salient parts of your R notebook. The written assignment consists of five parts:
+
+1. Exploratory data analysis (20 points): must include three correctly labeled graphs and an explanation that highlight the most important features that went into your model building.
+
+2. Development and assessment of an initial model from Part I (10 points)
+
+* Initial model: must include a summary table and an explanation/discussion for variable selection.  Interpretation of coefficients desirable for full points.
+
+* Model selection: must include a discussion
+
+* Residual: must include a residual plot and a discussion
+
+* RMSE: must include an RMSE and an explanation  (other criteria desirable)
+
+* Model testing: must include an explanation
+
+3. Development of the final model (20 points)
+
+* Final model: must include a summary table
+
+* Variables: must include an explanation
+
+* Variable selection/shrinkage: must use appropriate method and include an explanation
+
+
+
+4. Assessment of the final model (25 points)
+
+* Residual: must include a residual plot and a discussion
+
+* RMSE: must include an RMSE and an explanation  (other criteria desirable)
+
+* Model evaluation: must include an evaluation discussion
+
+* Model testing : must include a discussion
+
+* Model result: must include a selection of the top 10 undervalued and overvalued  houses
+
+5. Conclusion (10 points): must include a summary of results and a discussion of things learned
+
+
+
+### Part IV
+Create predictions for the validation data from your final model and write out to a file `prediction-validation.Rdata`
+This should have the same format as the models in Part I and II.
+
+10 points
+
+### Class Presentations
+
+Each Group should prepare 5 slides in their Github repo:  (save as slides.pdf)
+
+* Most interesting graphic  (a picture is worth a thousand words prize!)  
+
+* Best Model (motivation, how you found it, why you think it is best)
+
+* Best Insights into predicting Sales Price.
+
+* 2 Best Houses to purchase  (and why)
+
+* Best Team Name/Graphic
+
+We will select winners based on the above criteria and overall performance.
+
+
+Finally your repo should have: `writeup.Rmd`, `writeup.pdf`, `slides.Rmd` (and whatever output you use for the presentation) and `predict.Rdata` and `predict-validation.Rdata`.

@@ -1,0 +1,6 @@
+"0","```r
+# name dataframe as predictions! DO NOT CHANGE
+predictions = as.data.frame(Yhat)
+predictions$PID = ames_test$PID
+save(predictions, file=\"predict.Rdata\")
+```"
