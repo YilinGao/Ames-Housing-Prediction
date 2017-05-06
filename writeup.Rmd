@@ -474,7 +474,7 @@ The remaining continuous variable includes `area`,`Lot.Area`,`Lot.Frontage`,`Lot
 
 * **Variable selection/shrinkage**
 
-The penalizing constant we picked was 0.001787526 which was determined by cross validation. Under this regularization, the number of predictors reduced from 272 to 109 by using LASSO. As predicted, location variables like `neighborhood` and the its interaction with area remained in the model. 
+The penalizing constant we picked was $`r model_lasso.lambda.best`$ which was determined by cross validation. Under this regularization, the number of predictors reduced from 272 to 109 by using LASSO. As predicted, location variables like `neighborhood` and the its interaction with `area` remained in the model. 
 
 ## Assessment of the final model
 
